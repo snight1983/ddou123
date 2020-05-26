@@ -6,7 +6,9 @@ import (
 	"ddou123/crt"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"path/filepath"
+	"strconv"
 	"sync"
 	"time"
 
@@ -20,8 +22,13 @@ import (
 
 */
 
-var gFilesMap sync.Map
-var gFolders []string
+var (
+	gFilesMap sync.Map
+	gFolders  []string
+)
+
+//BLOCKSIZE .
+var BLOCKSIZE int64 = 4194304 // 1024 * 1024 * 4
 
 // Init ...
 func Init(paths []string) error {
@@ -53,7 +60,7 @@ func GetCacheFolder() (string, int64) {
 	return ph, sizeMax
 }
 
-func getBestSavePath(size int, name string) string {
+func getBestSaveFolder(size int64) string {
 	var ph string = ""
 	var sizeMax int64 = 0
 
@@ -72,7 +79,7 @@ func getBestSavePath(size int, name string) string {
 	dailyFolder := time.Now().Format("2006-01-02")
 	dailyFolder = filepath.Join(ph, dailyFolder)
 	crt.CreateMutiDir(dailyFolder)
-	return filepath.Join(dailyFolder, name)
+	return dailyFolder
 }
 
 // GetPath .
@@ -87,18 +94,19 @@ func GetPath(key string) (string, bool) {
 }
 
 func getFileSha(pos int64, total int64, at *mmap.ReaderAt) (string, bool) {
-	buff := make([]byte, 1024*1024*8)
+	buff := make([]byte, BLOCKSIZE)
 	var bufSha bytes.Buffer
 	for {
 		lenRead, err := at.ReadAt(buff, pos)
 		pos += int64(lenRead)
+
 		h := sha1.New()
-		h.Write(buff)
+		h.Write(buff[:lenRead])
 		bufSha.Write(h.Sum(nil))
+
 		if pos == total {
-			bufSha.Bytes()
 			h := sha1.New()
-			h.Write(buff)
+			h.Write(bufSha.Bytes())
 			return fmt.Sprintf("%x", h.Sum(nil)), true
 		}
 		if nil != err {
@@ -107,10 +115,10 @@ func getFileSha(pos int64, total int64, at *mmap.ReaderAt) (string, bool) {
 	}
 }
 
-// SaveFile .
-func SaveFile(path string) (string, bool) {
-	if crt.IsExist(path) {
-		file, err := mmap.Open(path)
+// SaveFileSingle .
+func SaveFileSingle(filePath string) (string, bool) {
+	if crt.IsExist(filePath) {
+		file, err := mmap.Open(filePath)
 		if nil != err {
 			return "", false
 		}
@@ -124,13 +132,86 @@ func SaveFile(path string) (string, bool) {
 		if ph, ok := GetPath(sha); true == ok {
 			return ph, ok
 		}
-		ph := getBestSavePath(file.Len(), sha)
+		ph := filepath.Join(getBestSaveFolder(int64(file.Len())), sha)
 		crt.CopyFile(int64(0), int64(file.Len()), ph, file)
-		res = crt.IsExist(ph)
-		if res {
+		if crt.IsExist(ph) {
 			gFilesMap.Store(sha, ph)
+			return ph, res
 		}
-		return ph, res
+	}
+	return "", false
+}
+
+// SaveFileFolder .
+func SaveFileFolder(folderPath string, cnt int) (string, bool) {
+
+	if crt.IsExist(folderPath) {
+		size := int64(cnt) * BLOCKSIZE
+		fd := getBestSaveFolder(size)
+
+		h := sha1.New()
+		h.Write([]byte(folderPath))
+		tmpN := fmt.Sprintf("%x", h.Sum(nil))
+		tmpPN := filepath.Join(fd, tmpN)
+		tmpPN += ".ftmp"
+
+		destTmp, err := os.Create(tmpPN)
+		if nil != err {
+			return "", false
+		}
+
+		var bufSha bytes.Buffer
+		var buf []byte
+		var info os.FileInfo
+
+		for i := 0; i < cnt; i++ {
+			file, err := os.Open(filepath.Join(folderPath, strconv.Itoa(i)))
+			if err != nil {
+				destTmp.Close()
+				return "", false
+			}
+
+			defer file.Close()
+
+			if info, err = file.Stat(); nil != err {
+				destTmp.Close()
+				return "", false
+			}
+
+			len := info.Size()
+			if len <= 0 || len > BLOCKSIZE {
+				return "", false
+			}
+
+			if buf, err = ioutil.ReadAll(file); err != nil {
+				destTmp.Close()
+				return "", false
+			}
+
+			if _, err := destTmp.Write(buf[:len]); err != nil {
+				destTmp.Close()
+				return "", false
+			}
+
+			h := sha1.New()
+			h.Write(buf[:len])
+			bufSha.Write(h.Sum(nil))
+		}
+		destTmp.Close()
+
+		h = sha1.New()
+		h.Write(bufSha.Bytes())
+		sha := fmt.Sprintf("%x", h.Sum(nil))
+		destPN := filepath.Join(fd, sha)
+
+		if err := os.Rename(tmpPN, destPN); nil != err {
+			return "", false
+		}
+
+		if crt.IsExist(destPN) {
+			gFilesMap.Store(sha, destPN)
+			return destPN, true
+		}
 	}
 	return "", false
 }
