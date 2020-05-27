@@ -7,6 +7,23 @@ import (
 
 func main() {
 
+	//vpr.WavTrain("C:\\Users\\51171\\Desktop\\SpeakerVoiceIdentifier-master\\train\\F00-16000.wav", "E:\\t\\1.upm", "E:\\t\\1.mod")
+	//fmt.Println(vpr.WavVerification("C:\\Users\\51171\\Desktop\\SpeakerVoiceIdentifier-master\\train\\F00-16000.wav", "E:\\t\\1.upm", "E:\\t\\1.mod"))
+	//fmt.Println(vpr.WavVerification("C:\\Users\\51171\\Desktop\\SpeakerVoiceIdentifier-master\\recog\\F00_2-16000.wav", "E:\\t\\1.upm", "E:\\t\\1.mod"))
+	//fmt.Println(vpr.WavVerification("C:\\Users\\51171\\Desktop\\SpeakerVoiceIdentifier-master\\recog\\F00_3-16000.wav", "E:\\t\\1.upm", "E:\\t\\1.mod"))
+	//fmt.Println("--------------")
+	//fmt.Println(vpr.WavVerification("C:\\Users\\51171\\Desktop\\SpeakerVoiceIdentifier-master\\recog\\F01_1-16000.wav", "E:\\t\\1.upm", "E:\\t\\1.mod"))
+	//fmt.Println(vpr.WavVerification("C:\\Users\\51171\\Desktop\\SpeakerVoiceIdentifier-master\\recog\\F01_2-16000.wav", "E:\\t\\1.upm", "E:\\t\\1.mod"))
+	//fmt.Println(vpr.WavVerification("C:\\Users\\51171\\Desktop\\SpeakerVoiceIdentifier-master\\recog\\F01_3-16000.wav", "E:\\t\\1.upm", "E:\\t\\1.mod"))
+	//fmt.Println("--------------")
+	//fmt.Println(vpr.WavVerification("C:\\Users\\51171\\Desktop\\SpeakerVoiceIdentifier-master\\recog\\F02_1-16000.wav", "E:\\t\\1.upm", "E:\\t\\1.mod"))
+	//fmt.Println(vpr.WavVerification("C:\\Users\\51171\\Desktop\\SpeakerVoiceIdentifier-master\\recog\\F02_2-16000.wav", "E:\\t\\1.upm", "E:\\t\\1.mod"))
+	//fmt.Println(vpr.WavVerification("C:\\Users\\51171\\Desktop\\SpeakerVoiceIdentifier-master\\recog\\F02_3-16000.wav", "E:\\t\\1.upm", "E:\\t\\1.mod"))
+	//fmt.Println("--------------")
+	//fmt.Println(vpr.WavVerification("C:\\Users\\51171\\Desktop\\SpeakerVoiceIdentifier-master\\recog\\F03_1-16000.wav", "E:\\t\\1.upm", "E:\\t\\1.mod"))
+	//fmt.Println(vpr.WavVerification("C:\\Users\\51171\\Desktop\\SpeakerVoiceIdentifier-master\\recog\\F03_2-16000.wav", "E:\\t\\1.upm", "E:\\t\\1.mod"))
+	//fmt.Println(vpr.WavVerification("C:\\Users\\51171\\Desktop\\SpeakerVoiceIdentifier-master\\recog\\F03_3-16000.wav", "E:\\t\\1.upm", "E:\\t\\1.mod"))
+	//fmt.Println("--------------")
 	/* test
 	f, _ := os.Open("D:\\92a2cf5d21750c997dec7969c43ff7e182bc927a.mp3")
 	buf := make([]byte, 1024*1024*4)
