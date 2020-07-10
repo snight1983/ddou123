@@ -1,4 +1,4 @@
-package crt
+package ddlib
 
 import (
 	"bytes"
@@ -9,21 +9,22 @@ import (
 )
 
 // IsExist  .
-func IsExist(path string) bool {
+func IsExist(path string) error {
 	_, err := os.Stat(path) //os.Stat获取文件信息
 	if err != nil {
 		if os.IsExist(err) {
-			return true
+			return nil
 		}
-		return false
+		return err
 	}
-	return true
+	return nil
 }
 
 //CreateMutiDir .
 func CreateMutiDir(filePath string) error {
-	if !IsExist(filePath) {
-		err := os.MkdirAll(filePath, os.ModePerm)
+	err := IsExist(filePath)
+	if nil != err {
+		err = os.MkdirAll(filePath, os.ModePerm)
 		if err != nil {
 			fmt.Println("创建文件夹失败,error info:", err)
 			return err

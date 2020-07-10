@@ -1,70 +1,52 @@
 package main
 
 import (
+	"ddou123/ddcloud"
 	"ddou123/ddfile"
+	"fmt"
+	"io"
+	"log"
+	"os"
+	"path/filepath"
+	"runtime/debug"
 	"time"
 )
 
-func main() {
-
-	//vpr.WavTrain("C:\\Users\\51171\\Desktop\\SpeakerVoiceIdentifier-master\\train\\F00-16000.wav", "E:\\t\\1.upm", "E:\\t\\1.mod")
-	//fmt.Println(vpr.WavVerification("C:\\Users\\51171\\Desktop\\SpeakerVoiceIdentifier-master\\train\\F00-16000.wav", "E:\\t\\1.upm", "E:\\t\\1.mod"))
-	//fmt.Println(vpr.WavVerification("C:\\Users\\51171\\Desktop\\SpeakerVoiceIdentifier-master\\recog\\F00_2-16000.wav", "E:\\t\\1.upm", "E:\\t\\1.mod"))
-	//fmt.Println(vpr.WavVerification("C:\\Users\\51171\\Desktop\\SpeakerVoiceIdentifier-master\\recog\\F00_3-16000.wav", "E:\\t\\1.upm", "E:\\t\\1.mod"))
-	//fmt.Println("--------------")
-	//fmt.Println(vpr.WavVerification("C:\\Users\\51171\\Desktop\\SpeakerVoiceIdentifier-master\\recog\\F01_1-16000.wav", "E:\\t\\1.upm", "E:\\t\\1.mod"))
-	//fmt.Println(vpr.WavVerification("C:\\Users\\51171\\Desktop\\SpeakerVoiceIdentifier-master\\recog\\F01_2-16000.wav", "E:\\t\\1.upm", "E:\\t\\1.mod"))
-	//fmt.Println(vpr.WavVerification("C:\\Users\\51171\\Desktop\\SpeakerVoiceIdentifier-master\\recog\\F01_3-16000.wav", "E:\\t\\1.upm", "E:\\t\\1.mod"))
-	//fmt.Println("--------------")
-	//fmt.Println(vpr.WavVerification("C:\\Users\\51171\\Desktop\\SpeakerVoiceIdentifier-master\\recog\\F02_1-16000.wav", "E:\\t\\1.upm", "E:\\t\\1.mod"))
-	//fmt.Println(vpr.WavVerification("C:\\Users\\51171\\Desktop\\SpeakerVoiceIdentifier-master\\recog\\F02_2-16000.wav", "E:\\t\\1.upm", "E:\\t\\1.mod"))
-	//fmt.Println(vpr.WavVerification("C:\\Users\\51171\\Desktop\\SpeakerVoiceIdentifier-master\\recog\\F02_3-16000.wav", "E:\\t\\1.upm", "E:\\t\\1.mod"))
-	//fmt.Println("--------------")
-	//fmt.Println(vpr.WavVerification("C:\\Users\\51171\\Desktop\\SpeakerVoiceIdentifier-master\\recog\\F03_1-16000.wav", "E:\\t\\1.upm", "E:\\t\\1.mod"))
-	//fmt.Println(vpr.WavVerification("C:\\Users\\51171\\Desktop\\SpeakerVoiceIdentifier-master\\recog\\F03_2-16000.wav", "E:\\t\\1.upm", "E:\\t\\1.mod"))
-	//fmt.Println(vpr.WavVerification("C:\\Users\\51171\\Desktop\\SpeakerVoiceIdentifier-master\\recog\\F03_3-16000.wav", "E:\\t\\1.upm", "E:\\t\\1.mod"))
-	//fmt.Println("--------------")
-	/* test
-	f, _ := os.Open("D:\\92a2cf5d21750c997dec7969c43ff7e182bc927a.mp3")
-	buf := make([]byte, 1024*1024*4)
-	var id int = 0
-	for {
-		n, _ := f.Read(buf)
-		if n == 0 {
-			break
+func dump() {
+	re := recover()
+	if nil != re {
+		path, _ := os.Getwd()
+		baselog := filepath.Join(path, `.\exit.log`)
+		file, err := os.OpenFile(baselog, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+		defer file.Close()
+		if err != nil {
+			log.Fatalln("Failed to open error log file", err)
+			return
 		}
-
-		part := filepath.Join("D:\\tmp", strconv.Itoa(id))
-		destTmp, _ := os.Create(part)
-		destTmp.Write(buf[:n])
-		destTmp.Close()
-		id++
+		elog := log.New(io.MultiWriter(file, os.Stderr), "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
+		elog.Println(fmt.Sprintf("panic:rn%v", re))
+		elog.Println(string(debug.Stack()))
 	}
-	*/
-	//ddnet.Init()
+}
 
+func main() {
+	defer dump()
+	//path := filepath.VolumeName("E:\\res\\root1\\")
+	//path := filepath.VolumeName("/root/b/c/d/e/f")
+	//fmt.Println(path)
+	//fmt.Println(err)
+
+	ddfile.AddFolder("E:\\res\\root1")
+	ddfile.AddFolder("E:\\res\\root2")
+	ddfile.AddFolder("D:\\res\\root3")
+	ddfile.AddFolder("C:\\res\\root4")
 	var rootPaths []string
-
 	rootPaths = append(rootPaths, "E:\\res\\root1")
 	rootPaths = append(rootPaths, "E:\\res\\root2")
 	rootPaths = append(rootPaths, "D:\\res\\root3")
 	rootPaths = append(rootPaths, "C:\\res\\root4")
+	ddcloud.Init(rootPaths)
 
-	ddfile.Init(rootPaths)
-	//router.InitRouter()
-	ddfile.SaveFileSingle("E:\\于文文+-+体面.flac")
-	ddfile.SaveFileFolder("D:\\tmp", 7)
-
-	//path, size := ddfile.GetCacheFolder()
-	//fmt.Println(path)
-	//fmt.Println(size)
-
-	//path, ishave := ddfile.IsExit("92a2cf5d21750c997dec7969c43ff7e182bc927a")
-	//ddfile.SaveFile("E:\\于文文+-+体面.flac")
-	//ddfile.SaveFile("E:\\于文文+-+体面.flac")
-	//if ishave {
-	//	fmt.Println(path)
-	//}
 	for {
 		time.Sleep(time.Duration(2) * time.Second)
 	}

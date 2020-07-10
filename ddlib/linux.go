@@ -1,6 +1,6 @@
 // +build !windows
 
-package crt
+package ddlib
 
 import (
 	"syscall"
