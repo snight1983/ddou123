@@ -5,7 +5,7 @@ import "go.uber.org/zap"
 var (
 
 	//CACHEMAX .
-	CACHEMAX int = 8192
+	CACHEMAX uint32 = 8192
 	//ROOTFOLDER .
 	ROOTFOLDER string = "ROOTFOLDER"
 	//SIGNINGKEY .

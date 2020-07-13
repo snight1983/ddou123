@@ -9,8 +9,8 @@ import (
 
 var (
 	gUserBaseDBPath string
-	gUserInfoMap    sync.Map        // uuid, userinfo(userbase)
-	gUserInfoCache  *ddlib.ObjCache = ddlib.NewCache()
+	gUserInfoMap    sync.Map     // uuid, userinfo(userbase)
+	gUserInfoCache  *ddlib.Queue = ddlib.NewQueue()
 )
 
 //AccountType .
@@ -109,7 +109,7 @@ func (obj *UserInfo) clean() {
 }
 
 func getUserInfo() *UserInfo {
-	uinfo := gUserInfoCache.GetObj()
+	uinfo := gUserInfoCache.Pop()
 	if nil == uinfo {
 		uinfo = &UserInfo{}
 	}
@@ -118,5 +118,5 @@ func getUserInfo() *UserInfo {
 
 func backUserInfo(uinfo *UserInfo) {
 	uinfo.clean()
-	gUserInfoCache.BackObj(uinfo)
+	gUserInfoCache.Push(uinfo)
 }

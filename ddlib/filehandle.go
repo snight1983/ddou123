@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"unsafe"
 
 	"golang.org/x/exp/mmap"
 )
@@ -63,4 +64,13 @@ func CopyFile(pos int64, total int64, dest string, at *mmap.ReaderAt) error {
 			return err
 		}
 	}
+}
+
+//IsLittleEndian 是否是小端
+func IsLittleEndian() bool {
+	var i int32 = 0x01020304
+	u := unsafe.Pointer(&i)
+	pb := (*byte)(u)
+	b := *pb
+	return (b == 0x04)
 }

@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	userFilesCache *ddlib.ObjCache = ddlib.NewCache()
+	userFilesCache *ddlib.Queue = ddlib.NewQueue()
 )
 
 // UserFile .
@@ -91,7 +91,7 @@ func initUserfile(uFile *UserFile, fid string, ufid string, parentufid string, n
 }
 
 func getUserFiles() *UserFiles {
-	ufs := userFilesCache.GetObj()
+	ufs := userFilesCache.Pop()
 	if nil == ufs {
 		ufs = &UserFiles{}
 		ufs.(*UserFiles).UFile = &UserFile{}
@@ -103,5 +103,5 @@ func getUserFiles() *UserFiles {
 func backUserFiles(ufs *UserFiles) {
 	ufs.UFile.clean()
 	ufs.UFChild.Clear()
-	userFilesCache.BackObj(ufs)
+	userFilesCache.Push(ufs)
 }

@@ -25,7 +25,7 @@ var (
 	gFileBaseMap    sync.Map
 	gFileBaseDB     *leveldb.DB
 	gFileBaseDBPath string
-	fileBaseCache   *ddlib.ObjCache = ddlib.NewCache()
+	fileBaseCache   *ddlib.Queue = ddlib.NewQueue()
 )
 
 // FileBase .
@@ -49,7 +49,7 @@ func (obj *FileBase) clean() {
 }
 
 func getFileBase() *FileBase {
-	ub := fileBaseCache.GetObj()
+	ub := fileBaseCache.Pop()
 	if nil == ub {
 		ub = &FileBase{}
 	}
@@ -58,7 +58,7 @@ func getFileBase() *FileBase {
 
 func backFileBase(obj *FileBase) {
 	obj.clean()
-	fileBaseCache.BackObj(obj)
+	fileBaseCache.Push(obj)
 }
 
 func initFB() error {

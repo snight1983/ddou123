@@ -17,12 +17,12 @@ var (
 func updateuileDB(db *leveldb.DB, ufile *UserFile) error {
 	ret, err := msgpack.Marshal(ufile)
 	if nil != err {
-		ddlib.GLOGER.Error("", zap.String("error", fmt.Sprintf("%s", err)))
+		ddlib.GLoger.Error("", zap.String("error", fmt.Sprintf("%s", err)))
 		return err
 	}
 	err = db.Put([]byte(ufile.FileID), []byte(ret), nil)
 	if nil != err {
-		ddlib.GLOGER.Error("", zap.String("error", fmt.Sprintf("%s", err)))
+		ddlib.GLoger.Error("", zap.String("error", fmt.Sprintf("%s", err)))
 		return err
 	}
 	return nil
@@ -39,7 +39,7 @@ func createRoot(uuid string) *UserFiles {
 	path := filepath.Join(gUserFilesDBRootPath, uuid)
 	ufDB, err := leveldb.OpenFile(path, nil)
 	if nil != err {
-		ddlib.GLOGER.Error("", zap.String("error", fmt.Sprintf("%s", err)))
+		ddlib.GLoger.Error("", zap.String("error", fmt.Sprintf("%s", err)))
 		return nil
 	}
 	defer ufDB.Close()

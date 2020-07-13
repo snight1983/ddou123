@@ -31,7 +31,7 @@ func userLogin(uid string, passwd string, equipmentID string, version string,
 
 	if uuid, ok = gUserIDMap.Load(uid); false == ok {
 
-		ddlib.GLOGER.Error("login_unregedit",
+		ddlib.GLoger.Error("login_unregedit",
 			zap.String("uid", uid), zap.String("addr", addr), zap.String("ip", ip),
 			zap.String("eq", equipmentID), zap.String("ver", version), zap.Float32("lon", lon),
 			zap.Float32("lan", lan), zap.String("routeid", routeID))
@@ -39,7 +39,7 @@ func userLogin(uid string, passwd string, equipmentID string, version string,
 	}
 
 	if userInfo, ok = gUserInfoMap.Load(uuid); false == ok {
-		ddlib.GLOGER.Error("login_uninit",
+		ddlib.GLoger.Error("login_uninit",
 			zap.String("uid", uid), zap.String("addr", addr), zap.String("ip", ip),
 			zap.String("eq", equipmentID), zap.String("ver", version), zap.Float32("lon", lon),
 			zap.Float32("lan", lan), zap.String("routeid", routeID))
@@ -48,7 +48,7 @@ func userLogin(uid string, passwd string, equipmentID string, version string,
 
 	if acType == ACEmail || acType == ACPhone {
 		if userInfo.(*UserInfo).UBase.PASSWD != passwd {
-			ddlib.GLOGER.Info("login_passwd",
+			ddlib.GLoger.Info("login_passwd",
 				zap.String("uid", uid), zap.String("addr", addr), zap.String("ip", ip),
 				zap.String("eq", equipmentID), zap.String("ver", version), zap.Float32("lon", lon),
 				zap.Float32("lan", lan), zap.String("routeid", routeID))
@@ -66,7 +66,7 @@ func userLogin(uid string, passwd string, equipmentID string, version string,
 		userInfo.(*UserInfo).Lalatitude = lan
 		userInfo.(*UserInfo).RouteID = routeID
 
-		ddlib.GLOGER.Info("login_validateToken",
+		ddlib.GLoger.Info("login_validateToken",
 			zap.String("uid", uid), zap.String("addr", addr), zap.String("ip", ip),
 			zap.String("eq", equipmentID), zap.String("ver", version), zap.Float32("lon", lon),
 			zap.Float32("lan", lan), zap.String("routeid", routeID))
@@ -88,7 +88,7 @@ func userLogin(uid string, passwd string, equipmentID string, version string,
 		userInfo.(*UserInfo).UserFileDBPath = filepath.Join(gUserBaseDBPath, "userfile")
 		userInfo.(*UserInfo).UserRelationShipBPath = filepath.Join(gUserBaseDBPath, "userrelationship")
 
-		ddlib.GLOGER.Info("login_createToken",
+		ddlib.GLoger.Info("login_createToken",
 			zap.String("uid", uid), zap.String("addr", addr), zap.String("ip", ip),
 			zap.String("eq", equipmentID), zap.String("ver", version), zap.Float32("lon", lon),
 			zap.Float32("lan", lan), zap.String("routeid", routeID), zap.String("token", signedToken),
@@ -140,7 +140,7 @@ func userRegedit(uid string, passwd string, equipmentID string, version string,
 		userBase.WX = uid
 	default:
 		{
-			ddlib.GLOGER.Error("reg_unknowactype",
+			ddlib.GLoger.Error("reg_unknowactype",
 				zap.String("uid", uid), zap.String("addr", addr), zap.String("ip", ip),
 				zap.String("eq", equipmentID), zap.String("ver", version), zap.Float32("lon", lon),
 				zap.Float32("lan", lan), zap.String("routeid", routeID))
@@ -152,7 +152,7 @@ func userRegedit(uid string, passwd string, equipmentID string, version string,
 	userBase.PASSWD = passwd
 
 	if userIDMapDB, err = leveldb.OpenFile(gUserIDMapDBPath, nil); nil != err {
-		ddlib.GLOGER.Error("reg_idmapdb",
+		ddlib.GLoger.Error("reg_idmapdb",
 			zap.String("uid", uid), zap.String("addr", addr), zap.String("ip", ip),
 			zap.String("eq", equipmentID), zap.String("ver", version), zap.Float32("lon", lon),
 			zap.Float32("lan", lan), zap.String("routeid", routeID), zap.String("path", gUserIDMapDBPath))
@@ -161,7 +161,7 @@ func userRegedit(uid string, passwd string, equipmentID string, version string,
 	defer userIDMapDB.Close()
 
 	if userBaseDB, err = leveldb.OpenFile(gUserBaseDBPath, nil); nil != err {
-		ddlib.GLOGER.Error("reg_ubasedb",
+		ddlib.GLoger.Error("reg_ubasedb",
 			zap.String("uid", uid), zap.String("addr", addr), zap.String("ip", ip),
 			zap.String("eq", equipmentID), zap.String("ver", version), zap.Float32("lon", lon),
 			zap.Float32("lan", lan), zap.String("routeid", routeID),
@@ -171,16 +171,16 @@ func userRegedit(uid string, passwd string, equipmentID string, version string,
 	defer userBaseDB.Close()
 
 	if err = updateUserBase(userBaseDB, userBase); err != nil {
-		ddlib.GLOGER.Error("reg_ubaseupdate",
+		ddlib.GLoger.Error("reg_ubaseupdate",
 			zap.String("uid", uid), zap.String("addr", addr), zap.String("ip", ip),
-			zap.String("eq", equipmentID), zap.String("ver", versions), zap.Float32("lon", lon),
+			zap.String("eq", equipmentID), zap.String("ver", version), zap.Float32("lon", lon),
 			zap.Float32("lan", lan), zap.String("routeid", routeID),
 			zap.String("path", gUserBaseDBPath), zap.String("error", fmt.Sprintf("%s", err)))
 		return "注册失败,请重试.4", false
 	}
 
 	if nil != userIDMapDB.Put([]byte(uid), []byte(uuid.(guuid.UUID).String()), nil) {
-		ddlib.GLOGER.Error("reg_idmapupdate",
+		ddlib.GLoger.Error("reg_idmapupdate",
 			zap.String("uid", uid), zap.String("addr", addr), zap.String("ip", ip),
 			zap.String("eq", equipmentID), zap.String("ver", version), zap.Float32("lon", lon),
 			zap.Float32("lan", lan), zap.String("routeid", routeID),

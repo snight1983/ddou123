@@ -7,7 +7,7 @@ import (
 	"github.com/vmihailenco/msgpack"
 )
 
-var userBaseCache *ddlib.ObjCache = ddlib.NewCache()
+var userBaseCache *ddlib.Queue = ddlib.NewQueue()
 
 // UserBase 用户基本信息
 type UserBase struct {
@@ -47,8 +47,20 @@ func (obj *UserBase) clean() {
 	obj.ChannelID = ""
 }
 
+// Serialize 序列化
+func (obj *UserBase) Serialize() []byte {
+
+	return nil
+}
+
+// UnSerialize 反序列化
+func (obj *UserBase) UnSerialize(buf []byte) {
+
+	return
+}
+
 func getUserBase() *UserBase {
-	ub := userBaseCache.GetObj()
+	ub := userBaseCache.Pop()
 	if nil == ub {
 		ub = &UserBase{}
 	}
@@ -57,7 +69,7 @@ func getUserBase() *UserBase {
 
 func backUserBase(obj *UserBase) {
 	obj.clean()
-	userBaseCache.BackObj(obj)
+	userBaseCache.Push(obj)
 }
 
 func updateUserBase(db *leveldb.DB, obj *UserBase) error {
